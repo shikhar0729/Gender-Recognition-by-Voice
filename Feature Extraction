@@ -1,0 +1,29 @@
+import librosa
+import numpy as np
+import pandas as pd
+
+def extract_features(file_path):
+    # Load audio file
+    y, sr = librosa.load(file_path, sr=None)
+
+    # Extract features
+    features = {
+        "meanfreq": np.mean(librosa.feature.spectral_centroid(y=y, sr=sr)),
+        "sd": np.std(librosa.feature.spectral_centroid(y=y, sr=sr)),
+        "median": np.median(librosa.feature.spectral_centroid(y=y, sr=sr)),
+        "Q25": np.percentile(librosa.feature.spectral_centroid(y=y, sr=sr), 25),
+        "Q75": np.percentile(librosa.feature.spectral_centroid(y=y, sr=sr), 75),
+        "IQR": np.percentile(librosa.feature.spectral_centroid(y=y, sr=sr), 75) - np.percentile(librosa.feature.spectral_centroid(y=y, sr=sr), 25),
+        "skew": librosa.feature.spectral_bandwidth(y=y, sr=sr).mean(),
+        "kurt": librosa.feature.spectral_contrast(y=y, sr=sr).mean(),
+        "sp.ent": librosa.feature.spectral_flatness(y=y).mean(),
+        "sfm": librosa.feature.spectral_rolloff(y=y, sr=sr).mean(),
+        "mode": librosa.feature.zero_crossing_rate(y=y).mean(),
+        "centroid": librosa.feature.spectral_centroid(y=y, sr=sr).mean(),
+    }
+    return features
+
+# Example usage
+file_path = "data/voice_samples/sample1.wav"
+features = extract_features(file_path)
+print(features)
